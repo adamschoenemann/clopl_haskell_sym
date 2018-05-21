@@ -1,0 +1,51 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{Ψ ⊢ A ≤ B}}\ \text{Under context $Ψ$, type $A$ is a subtype of $B$}
+\end{array}
+$$
+\begin{mathpar}
+\inferrule*[lab=$≤$Var]
+{ α \hask χ ∈ Ψ }
+{ Ψ ⊢ α ≤ α }
+
+\and
+\inferrule*[lab=$≤$Free]
+{ \Type \hask χ ∈ Ψ }
+{ Ψ ⊢ \Type ≤ \Type }
+
+\and
+\inferrule*[lab=$≤→$]
+{ Ψ ⊢ B_1 ≤ A_1 \\ Ψ ⊢ A_2 ≤ B_2 }
+{ Ψ ⊢ A_1 → A_2 ≤ B_1 → B_2 }
+
+\and
+\inferrule*[lab=$≤\hspace{-0.3em}∀$L]
+{ Ψ ⊢ τ \haskind χ \\ Ψ ⊢ [τ/α]A ≤ B }
+{ Ψ ⊢ ∀α \hask χ.\, A ≤ B }
+
+\and
+\inferrule*[lab=$≤\hspace{-0.3em}∀$R]
+{ Ψ,β \hask χ ⊢ A ≤ B }
+{ Ψ ⊢ A ≤ ∀β \hask χ.\, B }
+
+\and
+\inferrule*[lab=$≤$Tuple]
+{ Ψ ⊢ A_1 ≤ B_1 \\ \dots \\ Ψ ⊢ A_n ≤ B_n }
+{ Ψ ⊢ ⟨A_1, \dots, A_n⟩ ≤ ⟨B_1, \dots, B_n⟩ }
+
+\and
+\inferrule*[lab=$≤$App]
+{ Ψ ⊢ F ≤ G \\ Ψ ⊢ A ≤ B }
+{ Ψ ⊢ F\, A ≤ G\, B }
+
+\and
+\inferrule*[lab=$≤$Fix]
+{ Ψ ⊢ F ≤ G }
+{ Ψ ⊢ \sym{Fix}\, F ≤ \sym{Fix}\, G }
+
+\and
+\inferrule*[lab=$≤$\latkap]
+{ Ψ ⊢ κ_1 ≤ κ_2 \\ Ψ ⊢ A ≤ B }
+{ Ψ ⊢ \latkap[κ_1]\, A ≤ \latkap[κ_2]\, B }
+
+\end{mathpar}

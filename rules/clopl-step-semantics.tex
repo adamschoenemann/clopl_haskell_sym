@@ -1,0 +1,152 @@
+$$
+\def\arraystretch{1.4}
+\begin{array}{l}
+\mathlarger{\boxed{\stepsem{Ξ}{e}{v}}}\
+  \text{Under evaluation context $Ξ$, $e$ evaluates to $v$ in one step} \\
+% \mathlarger{\boxed{ \appsem{Ξ}{v_1}{v_2}{v} }}\
+%   \text{Under evaluation context $Ξ$, $v_1$ applied to $v_2$ evaluates to $v$} \\
+\mathlarger{\boxed{ \patsem{Ξ}{ρ}{v}{Ξ'} }}\
+  \text{Under evaluation context $Ξ$, matching $v$ with $ρ$ yields context $Ξ'$} \\
+\end{array}
+$$
+\begin{mathpar}
+
+\inferrule*[lab=Tick]
+{ }
+{ \stepsem{Ξ}{\tickc}{\tickc}}
+
+% \and
+% \inferrule*[lab=TickVar]
+% { }
+% { \stepsem{Ξ}{α}{α} }
+
+\and
+\inferrule*[lab=Var,leftskip=5em]
+{ (x ↦ v) ∈ Ξ }
+{ \stepsem{Ξ}{x}{v} }
+
+\and
+\inferrule*[lab=Abs,leftskip=3em]
+{ }
+{ \stepsem{Ξ}{λx.\ e}{\clos{Ξ}{x}{e}} }
+
+\and
+\inferrule*[lab=TickAbs,leftskip=3em]
+{ }
+{ \stepsem{Ξ}{γ(α : \clockk).\ e}{γ_Ξ\,α.\ e} }
+
+\and
+\inferrule*[lab=Fmap,leftskip=3em]
+{ (fmap(F) ↦ v) ∈ Ξ }
+{ \stepsem{Ξ}{\sym{fmap}_F}{v} }
+
+\and
+\inferrule*[lab=Ann,leftskip=3em]
+{ \stepsem{Ξ}{e}{v} }
+{ \stepsem{Ξ}{e : A}{v} }
+
+\and
+\inferrule*[lab=TypeApp]
+{ \stepsem{Ξ}{e}{v} }
+{ \stepsem{Ξ}{e\, \{A\}} {v} }
+
+\and
+\inferrule*[lab=Fold,leftskip=2em]
+{ \stepsem {Ξ} {e} {v} }
+{ \stepsem {Ξ} {\fold\, e} { \fold\, v } }
+
+\and
+\inferrule*[lab=Unfold,leftskip=2em]
+{ \stepsem {Ξ} {e} {\fold\, v} }
+{ \stepsem {Ξ} {\unfold\, e} {v} }
+
+\and
+\inferrule*[lab=Tuple,leftskip=2em]
+{ \stepsem{Ξ}{e_1}{v_1} \ \dots \ \stepsem{Ξ}{e_n}{v_n} }
+{ \stepsem{Ξ}{⟨e_1,\dots,e_n⟩}{⟨v_1,\dots,v_n⟩} }
+
+\and
+\inferrule*[lab=Fix]
+{ \stepsem{Ξ} {λf.\ f\ (γ(\_ \hask κ).\ \sym{fix}\, f)} {v} }
+{ \stepsem {Ξ} {\sym{fix}} {v} }
+
+\and
+\inferrule*[lab=Let]
+{ \stepsem{Ξ}{e'}{v'} \\ \patsem{Ξ}{ρ}{v'}{Ξ'} \\ \stepsem{Ξ'}{e}{v} }
+{ \stepsem{Ξ}{\letterm{ρ}{e'}{e}} {v} }
+
+\and
+\inferrule*[lab=Case]
+{ \stepsem{Ξ}{e}{v} \\  \text{Smallest $i$ such that}\ \patsem{Ξ}{ρ_i}{v}{Ξ'} \\ \stepsem{Ξ'}{e_i}{v_i} }
+{ \stepsem{Ξ}{\case\ e\ \sym{of}\ (\branch{1},\dots,\branch{n})}{v_i} }
+
+
+
+% E |- (\body outer -> body (fmap_F (\inner -> <inner, primRec_F body inner>) outer)) \\ v
+\and
+\inferrule*[lab=PrimRec]
+{ \stepsem {Ξ} {λb\, o.\ b\, (\fmap_F\ (λi.\ ⟨i, \primRec_F\ b\ i⟩)\ (\unfold\ o))} {v} }
+{ \stepsem {Ξ} {\primRec_F} {v} }
+
+% --------------------------------------------------------------------------------
+%                              app-rules start here
+% --------------------------------------------------------------------------------
+
+\and
+\inferrule*[lab=LamApp]
+{ \stepsem{Ξ}{e_1}{ \clos{Ξ'}{x}{e} } \quad \stepsem{Ξ}{e_2}{v_2} \quad \stepsem{Ξ', x ↦ v_2}{e}{v} }
+{ \stepsem{Ξ}{e_1\, e_2} {v} }
+
+\and
+\inferrule*[lab=TickApp]
+{ \stepsem{Ξ}{e_1}{ \tclos{Ξ'}{x}{e} } \quad \stepsem{Ξ}{e_2}{v_2} \quad \stepsem{Ξ', x ↦ v_2}{e}{v} }
+{ \stepsem{Ξ}{e_1\, [e_2]} {v} }
+
+\and
+\inferrule*[lab=ConstrApp]
+{ \stepsem{Ξ}{e_1}{ (\Constr\, v_1,\dots,v_n) } \\ \stepsem{Ξ}{e_2}{v} }
+{ \stepsem {Ξ} {e_1\, e_2} {(\Constr\, v_1,\dots,v_n,v)} }
+
+% --------------------------------------------------------------------------------
+%                           old  app-rules start here
+% --------------------------------------------------------------------------------
+
+% \and
+% \inferrule*[lab=App]
+% { \stepsem{Ξ}{e_1}{v_1} \\ \stepsem{Ξ}{e_2}{v_2} \\ \appsem{Ξ}{v_1}{v_2}{v} }
+% { \stepsem{Ξ}{e_1\, e_2} {v} }
+
+% \and
+% \inferrule*[lab=AppAbs]
+% { \stepsem{Ξ, Ξ', x ↦ v_2}{e}{v} }
+% { \appsem {Ξ} {(\clos{Ξ'}{x}{e})} {v_2} {v} }
+
+% \and
+% \inferrule*[lab=AppTickAbs]
+% { \stepsem{Ξ,Ξ', x ↦ v_2}{e}{v} }
+% { \appsem {Ξ} {(\tclos{Ξ'}{x}{e})} {v_2} {v} }
+
+% \and
+% \inferrule*[lab=AppConstr]
+% {  }
+% { \appsem {Ξ} {(\Constr\, v_1,\dots,v_n)} {v} {\Constr\, v_1,\dots,v_n,v} }
+
+
+
+% --------------------------------------------------------------------------------
+%                              patsem starts here
+% --------------------------------------------------------------------------------
+
+\inferrule*[lab=PatTuple]
+{ \patsem{Ξ}{ρ_1}{v_1}{Ξ_1} \ \dots \ \patsem{Ξ_{n-1}}{ρ_n}{v_n}{Ξ_n} }
+{ \patsem{Ξ}{⟨ρ_1,\dots,ρ_n⟩}{ ⟨v_1,\dots,v_n⟩ }{Ξ_n} }
+
+\inferrule*[lab=PatBind]
+{ }
+{ \patsem{Ξ}{x}{v}{Ξ, x ↦ v} }
+
+\inferrule*[lab=PatConstr]
+{ \patsem{Ξ}{ρ_1}{v_1}{Ξ_1} \ \dots \ \patsem{Ξ_{n-1}}{ρ_n}{v_n}{Ξ_n} }
+{ \patsem{Ξ}{ (\Constr\, ρ_1,\dots,ρ_n) } { (\Constr\, v_1,\dots,v_n) } {Ξ_n} }
+
+\end{mathpar}

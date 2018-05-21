@@ -1,0 +1,146 @@
+
+$$
+\def\arraystretch{1.2}
+\begin{array}{l}
+\mathlarger{\boxed{Ψ ⊢ e \checks A}}\ \text{Under context $Ψ$, $e$ checks against type $A$} \\
+\mathlarger{\boxed{Ψ ⊢ e \synths A}}\ \text{Under context $Ψ$, $e$ synthesizes type $A$} \\
+\mathlarger{\boxed{Ψ ⊢ A \bull e \appsynths C}}\
+  \text{Under context $Ψ$, applying a function of type $A$ to $e$ synthesizes type $C$} \\
+% \mathlarger{\boxed{Ψ ⊢ \checkbranch{ρ}{A}{e}{B}}} \
+%   \text{Under context $Ψ$, check branch $(\branch{})$ with pattern-type $A$
+%         and body-type $B$ } \\
+% \mathlarger{\boxed{Ψ ⊢ ρ \patcheck A ⊣ Ψ'}}\
+%   \text{Under context $Ψ$, check pattern $ρ$ with type $A$ yielding new context $Ψ'$}
+\end{array}
+$$
+\begin{mathpar}
+\mprset{sep=1em}
+\inferrule*[lab=\Decl Var]
+{(x : A) ∈ Ψ}
+{Ψ ⊢ x \synths A}
+
+\inferrule*[lab=\Decl Constr$\synths$,leftskip=1.5em]
+{(\Constr : A) ∈ Ψ}
+{Ψ ⊢ \Constr \synths A}
+
+\and
+\inferrule*[lab=\Decl Sub,leftskip=3.5em]
+{Ψ ⊢ e \synths A \\ Ψ ⊢ A ≤ B}
+{Ψ ⊢ e \checks B}
+
+\and
+\inferrule*[lab=\Decl Anno,leftskip=3.5em]
+{Ψ ⊢ A \haskind ⋆ \\ Ψ ⊢ e \checks A }
+{Ψ ⊢ (e : A) \synths A}
+
+\and
+\inferrule*[lab=\Decl $∀$I,leftskip=3.5em, rightskip=2em]
+{ Ψ, α \hask χ ⊢ e \checks A}
+{Ψ ⊢ e \checks  ∀α \hask χ.\ A}
+
+\and
+\inferrule*[lab=\Decl $→$I]
+{ Ψ,x :_λ A ⊢ e \checks B }
+{Ψ ⊢ λx.\, e \checks  A → B}
+
+\and
+\inferrule*[lab=\Decl $∀$App]
+{ Ψ ⊢ τ \haskind χ \\ Ψ ⊢ [τ/α]A \bull e \appsynths C}
+{ Ψ ⊢ (∀α \hask χ .\ A) \bull e \appsynths C}
+
+
+\and
+\inferrule*[lab=\Decl $→$I$\synths$]
+{ Ψ ⊢ σ → τ \haskind ⋆ \\ Ψ, x :_λ σ ⊢ e \checks τ }
+{ Ψ ⊢ λx.\, e \synths σ → τ }
+
+\and
+\inferrule*[lab=\Decl $→$E]
+{ Ψ ⊢ e₁ \synths A \\ Ψ ⊢ A \bull e_2 \appsynths C }
+{ Ψ ⊢ e₁\, e₂ \synths C }
+
+\and
+\inferrule*[lab=\Decl $→$App]
+{ Ψ ⊢ e \checks A }
+{ Ψ ⊢ (A → C) \bull e \appsynths C }
+
+
+\and
+\inferrule*[lab=\Decl $\latkap$I$\synths$]
+{ Ψ ⊢ κ \haskind \clockk \\ Ψ,x :_λ κ ⊢ e \synths A }
+{Ψ ⊢ γ(x : κ).\, e \synths \latkap A }
+
+\and
+\inferrule*[lab=\Decl $\latkap$App]
+{ Ψ ⊢ κ \haskind \clockk \\ Ψ ⊢ x \checks κ }
+{ Ψ ⊢ (\latkap\, A) \bull [x] \appsynths A }
+
+\and
+\inferrule*[lab=\Decl $\latkap$App$\tickc$]
+{ Ψ ⊢ κ \haskind \clockk \\ \stable_κ(Ψ) }
+{ Ψ ⊢ (\latkap\, A) \bull [\tickc] \appsynths A }
+
+\and
+\inferrule*[lab=\Decl TApp,leftskip=1em]
+{ Ψ ⊢ e \synths ∀(α : χ).\ B \\ A \haskind χ }
+{ Ψ ⊢ e\, \{A\} \synths [A/α]B }
+
+% \and
+% \inferrule*[lab=\Decl Fix]
+% { }
+% { Ψ ⊢ \sym{fix} \synths ∀(κ \hask \clockk), α.\ (\latkap α → α) → α }
+
+% \and
+% \inferrule*[lab=\Decl Fmap]
+% { Functor(F) ∈ Ψ }
+% { Ψ ⊢ \sym{fmap}_F \synths ∀α, β.\ (α → β) → F\, α → F\, β }
+
+\and
+\inferrule*[lab=\Decl PrimRec,leftskip=4em]
+{ Functor(F) ∈ Ψ }
+{ Ψ ⊢ \sym{primRec}_F \synths ∀α.\ F\, ⟨\Rec\, F, α⟩ → \Rec\, F → α }
+
+% \and
+% \inferrule*[lab=\Decl Case]
+% { Ψ ⊢ e \synths A \\ Ψ ⊢ τ \haskind ⋆ \\ Ψ ⊢ A ≤ τ \\ Ψ ⊢ \checkbranch{ρ_1}{τ}{e_1}{B}
+%   \ \dots \
+%   Ψ ⊢ \checkbranch{ρ_n}{τ}{e_n}{B}
+% }
+% { Ψ ⊢ \case\ e\ \sym{of}\ (\branch{1}, \dots, \branch{n}) \checks B }
+
+% \and
+% \inferrule*[lab=\Decl Branch]
+% { Ψ ⊢ ρ \patcheck A ⊣ Ψ' \\ Ψ' ⊢ e \checks B }
+% { Ψ ⊢ \checkbranch{ρ}{A}{e}{B} }
+
+% \and
+% \inferrule*[lab=\Decl PatTuple]
+% { Ψ ⊢ ρ_1 \patcheck A_1 ⊣ Ψ_1 \ \dots \ Ψ_{n-1} ⊢ ρ_n \patcheck ⊣ Ψ_n }
+% { Ψ ⊢ ⟨ρ_1, \dots, ρ_n⟩ \patcheck ⟨A_1, \dots, A_n⟩ ⊣ Ψ_n }
+
+% \and
+% \inferrule*[lab=\Decl PatBind]
+% { }
+% { Ψ ⊢ x \patcheck A ⊣ Ψ, x :_= A }
+
+% \and
+% \inferrule*[lab=\Decl PatConstr]
+% { (\Constr : A') ∈ Ψ  \and
+%   Ψ ⊢ ρ_1 \patcheck B_1 ⊣ Ψ_1 \ \dots \ Ψ_{n-1} ⊢ ρ_n \patcheck B_n ⊣ Ψ_n \and
+%   Ψ ⊢ A' ≤ B_1 → \dots → B_n → A
+% }
+% { Ψ ⊢ (\Constr\ ρ_1, \dots, ρ_n) \patcheck A ⊣ Ψ_n }
+
+% \and
+% \inferrule*[lab=\Decl Let]
+% { Ψ ⊢ e' \synths A \\ Ψ,x :_= A ⊢ e \checks B }
+% { Ψ ⊢ \letterm{x}{e'}{e} \checks B }
+
+% \and
+% \inferrule*[lab=\Decl LetPat, leftskip=3em]
+% % { Ψ ⊢ e' \synths A \\ A' = intros(A) \\ Ψ ⊢ \checkbranch{ρ}{A'}{e}{B} }
+% { Ψ ⊢ \case\ e'\ \sym{of}\ (ρ ⟶ e) \checks B \\ ρ ≠ x }
+% { Ψ ⊢ \letterm{ρ}{e'}{e} \checks B }
+
+
+\end{mathpar}

@@ -1,0 +1,92 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{Γ ⊢ e \checks A ⊣ Δ}}\ \text{Under input context $Γ$, $e$ checks against type $A$,
+            with output context $Δ$} \\
+\mathlarger{\boxed{Γ ⊢ e \synths A ⊣ Δ}}\ \text{Under input context $Γ$, $e$ synthesizes type $A$,
+            with output context $Δ$}  \\
+\mathlarger{\boxed{Γ ⊢ A \bull e \appsynths C ⊣ Δ}}\
+  \text{Under input context $Γ$, applying a function of type $A$ to $e$
+       synthesizes type $C$, with output context $Δ$} \\
+\end{array}
+$$
+\begin{mathpar}
+
+\inferrule*[lab=Var]
+{(x : A) ∈ Γ}
+{Γ ⊢ x \synths A ⊣ Γ}
+
+\inferrule*[lab=\Decl Constr$\synths$]
+{ (\Constr : A) ∈ Φ }
+{ Γ ⊢ \Constr \synths A ⊢ Γ }
+
+\and
+\inferrule*[lab=Anno]
+{Γ ⊢ A \\ Γ ⊢ e \checks A ⊣ Δ}
+{Γ ⊢ (e : A) \synths A ⊣ Δ}
+
+\and
+\inferrule*[lab=$∀$I]
+{ Γ, α \hask χ ⊢ e \checks A ⊣ Δ,α,Θ }
+{ Γ ⊢ e \checks ∀α \hask χ.\ A ⊣ Δ }
+
+\and
+\inferrule*[lab=$∀$App]
+{ Γ,\ahat \hask χ ⊢ [\ahat/α]A \bull e \appsynths C ⊣ Δ}
+{ Γ ⊢ ∀α \hask χ.\ A \bull e \appsynths C ⊣ Δ }
+
+\and
+\inferrule*[lab=$→$I]
+{ Γ,x:A ⊢ e \checks B ⊣ Δ, x:A, Θ}
+{ Γ ⊢ λx.\, e \checks A → B ⊣ Δ }
+
+\and
+\inferrule*[lab=Sub]
+{Γ ⊢ e \synths A ⊣ Θ \\ Θ ⊢ [Θ]A \subt [Θ]B ⊣ Δ}
+{Γ ⊢ e \checks B ⊣ Δ}
+
+\and
+\inferrule*[lab=$→$I$\synths$]
+{ Γ,\ahat,\bhat, x:\ahat ⊢ e \checks \bhat ⊣ Δ,x:\ahat,Θ }
+{ Γ ⊢ λx.\, e \synths \ahat → \bhat ⊣ Δ }
+
+\and
+\inferrule*[lab=$→$E,leftskip=2.5em]
+{ Γ ⊢ e₁ \synths A ⊣ Θ \\ Θ ⊢ [Θ]A \bull e_2 \appsynths C ⊣ Δ }
+{ Γ ⊢ e₁\, e₂ \synths C ⊣ Δ }
+
+\and
+\inferrule*[lab=$\latkap$App,leftskip=3.5em]
+{ Γ ⊢ κ \haskind \clockk \\ Γ ⊢ x \checks κ ⊣ Δ }
+{ Γ ⊢ (\latkap\, A) \bull [x] \appsynths A ⊣ Δ }
+
+\and
+\inferrule*[lab=$\ahat$App]
+{ Γ[\ahatk[⋆][2], \ahatk[⋆][1], \ahatk[⋆] = \ahat_1 → \ahat_2] ⊢ e \checks \ahat_1 ⊣ Δ }
+{ Γ[\ahatk[⋆]] ⊢ \ahat \bull e \appsynths \ahat_2 ⊣ Δ }
+
+\and
+\inferrule*[lab=$\latkap\ahat$App,leftskip=2.5em]
+{ Γ[\ahatk[χ][2], \ahatk[\clockk][1], \ahatk[⋆] = \latkap[\ahat_1] \ahat_2] ⊢ x \checks \ahat_1 ⊣ Δ }
+{ Γ[\ahatk[⋆]] ⊢ \ahat \bull [x] \appsynths \ahat_2 ⊣ Δ }
+
+\and
+\inferrule*[lab=$\latkap$App$\tickc$, leftskip=3.5em]
+{ Γ ⊢ κ \haskind \clockk \\ \stable_κ(Γ) }
+{ Γ ⊢ (\latkap\, A) \bull [\tickc] \appsynths A ⊣ Γ }
+
+\and
+\inferrule*[lab=$→$App]
+{ Γ ⊢ e \checks A ⊣ Δ }
+{ Γ ⊢ A → C \bull e \appsynths C ⊣ Δ }
+
+\and
+\inferrule*[lab=$\latkap$I$\synths$]
+{ Γ ⊢ κ \haskind \clockk \\ Γ,x :_λ κ ⊢ e \synths A ⊣ Δ }
+{ Γ ⊢ γ(x : κ).\, e \synths \latkap A ⊣ Δ }
+
+\and
+\inferrule*[lab=TApp]
+{ Γ ⊢ e \synths ∀(α : χ).\ B ⊣ Δ \\ Δ ⊢ A \haskind χ }
+{ Γ ⊢ e\, \{A\} \synths [A/α]B ⊣ Δ }
+
+\end{mathpar}

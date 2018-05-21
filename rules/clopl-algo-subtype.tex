@@ -1,0 +1,60 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{Γ ⊢ A \subt B ⊣ Δ}}\ \text{Under context $Γ$, type $A$ is a subtype of $B$, yielding output context $Δ$}
+\end{array}
+$$
+\begin{mathpar}
+\inferrule*[right=$\subt$Var]
+{ }
+{ Γ[\afk] ⊢ α \subt α ⊣ Γ[\afk] }
+
+\and
+\inferrule*[right=$\subt$Free]
+{ \Type ∈ Φ }
+{ Γ ⊢ \Type \subt \Type ⊣ Γ }
+
+\inferrule*[right=$\subt$Exvar]
+{ }
+{ Γ[\ahatk] ⊢ \ahat \subt \ahat ⊣ Γ[\ahatk] }
+
+\inferrule*[right=$\subt$→]
+{ Γ ⊢ B_1 \subt A_1 ⊣ Θ \\   Θ ⊢ [Θ]A_2 \subt [Θ]B_2 ⊣ Δ}
+{ Γ ⊢ A_1 → A_2 \subt B_1 → B_2 ⊣ Δ }
+
+\inferrule*[right=$\subt∀$L]
+{ Γ,\marker_{\ahat},\ahatk ⊢ [\ahat/α]A \subt B ⊣ Δ,\marker_{\ahat},Θ }
+{ Γ ⊢ ∀\afk.\, A \subt B ⊣ Δ }
+
+\inferrule*[right=$\subt∀$R]
+{ Γ,\afk ⊢ A \subt B ⊣ Δ,\afk,Θ }
+{ Γ ⊢ A \subt ∀\afk.\, B ⊣ Δ }
+
+\and
+\inferrule*[right=$\subt$Tuple]
+{ Γ ⊢ A_1 \subt B_1 ⊣ Δ_1 \quad \dots \quad Δ_{n-1} ⊢ [Δ_{n-1}]A_n \subt [Δ_{n-1}]B_n ⊣ Δ_n }
+{ Γ ⊢ ⟨A_1, \dots, A_n⟩ \subt ⟨B_1, \dots, B_n⟩ ⊣ Δ_n }
+
+\and
+\inferrule*[right=$\subt$App]
+{ Γ ⊢ F \subt G ⊣ Θ \\ Θ ⊢ [Θ]A \subt [Θ]B ⊣ Δ }
+{ Γ ⊢ F\, A \subt G\, B ⊣ Δ }
+
+\and
+\inferrule*[right=$\subt$Fix]
+{ Γ ⊢ F \subt G ⊣ Δ }
+{ Γ ⊢ \sym{Fix}\, F \subt \sym{Fix}\, G ⊣ Δ }
+
+\and
+\inferrule*[right=$\subt$\latkap]
+{ Γ ⊢ κ_1 \subt κ_2 ⊣ Θ \\ Θ ⊢ [Θ]A \subt [Θ]B ⊣ Δ }
+{ Γ ⊢ \latkap[κ_1]\, A \subt \latkap[κ_2]\, B ⊣ Δ }
+
+\inferrule*[right=$\subt$InstantiateL]
+{ \ahat ∉ FV(A) \\  Γ[\ahatk] ⊢ \ahatk \instl A ⊣ Δ }
+{ Γ[\ahatk] ⊢ \ahat \subt A ⊣ Δ }
+
+\inferrule*[right=$\subt$InstantiateR]
+{ \ahat ∉ FV(A) \\  Γ[\ahatk] ⊢ A \instr \ahatk ⊣ Δ }
+{ Γ[\ahatk] ⊢ A \subt \ahat ⊣ Δ }
+
+\end{mathpar}

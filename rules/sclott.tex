@@ -1,0 +1,63 @@
+\begin{mathpar}
+  \inferrule*[lab=Var]
+  {\wfcxt{Γ,x:A,Γ'}}
+  {\hastype{Γ,x:A,Γ'}{x}{A}}
+
+  \and
+  \inferrule*[lab=Abs,leftskip=2em]
+  {\hastype{Γ, x : A}{e}{B}}
+  {\hastype{Γ}{\lambda (x : A).\ e}{A \to B}}
+
+  \and
+  \inferrule*[lab=App,leftskip=2em]
+  {\hastype{Γ}{e}{A \to B}\\
+    \hastype{Γ}{s}{A}}
+  {\hastype{Γ}{e\,s}{B}}
+
+  \and
+  \inferrule*[lab=TickAbs,leftskip=2em]
+  {\hastype{Γ,\tickA:κ}{e}{A}  \\ κ ∈ Δ }% \\ \wfclock{Δ}{Γ}{κ}}
+  {\hastype{Γ}{\tabs{\tickA}{κ}\ e}{\latkap A}}
+
+  \and
+  \inferrule*[lab=ClockAbs]
+  {\hastype[Δ, κ]{Γ}{e}{A}\\
+    \wfcxt{Γ}}
+  {\hastype{Γ}{Λκ.\ e}{∀ κ.\ A}}
+
+  \and
+  \inferrule*[lab=ClockApp,leftskip=2em]
+  {\hastype{Γ}{e}{∀ κ.\ A}\\
+    κ' ∈ Δ}
+  {\hastype{Γ}{e\ [κ']}{A \subst{κ'}{κ}}}
+
+  \and
+  \inferrule*[lab=TickApp,leftskip=2em]
+  {\hastype{Γ}{e}{\latkap A}\\\wfcxt{Γ'}}
+  {\hastype{Γ,\tickA: κ,Γ'}{\tapp[\tickA] e}{A}}
+
+  \and
+  \inferrule*[lab=TConstApp,leftskip=2em]
+  {\hastype[Δ,κ]{Γ}{e}{\latkap A}\\ \wfcxt{Γ}}
+  {\hastype[Δ,κ]{Γ}{\tappc{e}}{A}}
+
+  \and
+  \inferrule*[lab=Fix]
+  {\hastype{Γ}{e}{\latkap{A} \to A} \\ κ \in Δ}
+  {\hastype{Γ}{\fix{κ}\,e}{A}}
+
+  \and
+  \inferrule*[lab=Unfold,leftskip=4em]
+  {\hastype{Γ}{e}{\Fix X.\, A} \\ Γ ⊢ \Fix X. A}
+  {\hastype{Γ}{\unfold\,e}{A\subst{\Fix X. A}{X}}}
+
+  \and
+  \inferrule*[lab=Fold,leftskip=4em]
+  {\hastype{Γ}{e}{A\subst{\Fix X. A}{X}} \\ Γ ⊢ \Fix X. A}
+  {\hastype{Γ}{\fold\,e}{\Fix X. A}} \\
+
+  \and
+  \inferrule*[lab=PrimRec]
+  {\hastype{Γ}{e}{F[(\Fix X.\, F[X]) × A] → A }}
+  {\hastype{Γ}{\primRec_F\, e}{(\Fix X.\, F[X]) → A}}
+\end{mathpar}

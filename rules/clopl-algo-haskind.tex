@@ -1,0 +1,57 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{Γ ⊢ A \haskind χ}}\ \text{Under context $Γ$, type $A$ has kind $χ$}
+\end{array}
+$$
+
+\begin{mathpar}
+
+\inferrule*[right=KindVar]
+{ (α : χ) ∈ Γ }
+{ Γ ⊢ α \haskind χ }
+
+\and
+\inferrule*[right=KindFree]
+{ (\Type : χ) ∈ Φ }
+{ Γ ⊢ \Type \haskind χ }
+
+\and
+\inferrule*[right=Kind$→$]
+{ Γ ⊢ A \haskind ⋆ \\ Γ ⊢ B \haskind ⋆ }
+{ Γ ⊢ A → B \haskind ⋆ }
+
+\and
+\inferrule*[right=KindTuple]
+{ Γ ⊢ A_1 \haskind ⋆ \\ \dots \\ Γ ⊢ A_n \haskind ⋆ }
+{ Γ ⊢ ⟨A_1, \dots, A_n ⟩ \haskind ⋆ }
+
+\and
+\inferrule*[right=Kind$∀$]
+{ Γ, α : χ ⊢ A \haskind ⋆ }
+{ Γ ⊢ ∀α : χ.\, A \haskind ⋆ }
+
+\and
+\inferrule*[right=KindApp]
+{ Γ ⊢ F \haskind (χ_1 → χ_2) \\ Γ ⊢ B \haskind χ_1 }
+{ Γ ⊢ F\, B \haskind χ_2 }
+
+\and
+\inferrule*[right=KindFix]
+{ Γ ⊢ F \haskind (⋆ → ⋆) }
+{ Γ ⊢ \sym{Fix}\, F \haskind ⋆ }
+
+\and
+\inferrule*[right=Kind$\latkap$]
+{ Γ ⊢ κ \haskind \clockk \\ Γ ⊢ A \haskind ⋆ }
+{ Γ ⊢ \latkap{A} \haskind ⋆ }
+
+\inferrule*[right=KindEVar]
+{ \ahat : χ ∈ Γ }
+{ Γ ⊢ \ahat \haskind χ }
+
+\and
+\inferrule*[right=KindEVarSolved]
+{ \ahat : χ = τ ∈ Γ }
+{ Γ ⊢ \ahat \haskind χ }
+
+\end{mathpar}

@@ -1,0 +1,57 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{Γ ⊢ A \instr \ahatk ⊣ Δ}}\
+  \text{Under input context $Γ$, instantiate $\ahat$ such that $A \subt \ahat$, with output context $Δ$} \\
+\end{array}
+$$
+\begin{mathpar}
+
+\inferrule*[right=InstRSolve]
+{ Γ[\ahatk] ⊢ τ \haskind χ }
+{ Γ[\ahatk] ⊢ τ \instr \ahatk ⊣ Γ[\ahatk] }
+
+\and
+\inferrule*[right=InstRAllL,leftskip=3.5em]
+{ Γ[\ahatk], \marker_{\bhat}, \bhatk ⊢ [\bhat/β]B \instr \ahatk[⋆] ⊣ Δ,\marker_{\bhat},Δ' }
+{ Γ[\ahatk] ⊢ ∀β \hask χ.\ B \instr \ahatk[⋆] ⊣ Δ }
+
+\and
+\inferrule*[right=InstRReach,rightskip=10em]
+{ }
+{Γ[\ahatk][\bhatk] ⊢ \bhat \instr \ahat ⊣ Γ[\ahatk][\bhatk = \ahat]}
+
+\and
+\inferrule*[right=InstRArr]
+{ Γ[\ahatk[⋆][2],\; \ahatk[⋆][1],\; \ahatk[⋆] = \ahat_1 \karr \ahat_2] ⊢ \ahatk[⋆][1] \instl A_1 ⊣ Θ \\
+  Θ ⊢ [Θ]A_2 \instr \ahatk[⋆][2] ⊣ Δ
+}
+{ Γ[\ahatk[⋆]] ⊢ A_1 \karr A_2 \instr \ahatk[⋆] ⊣ Δ }
+
+
+\and
+\inferrule*[right=InstRApp]
+{ Γ ⊢ A_1 \haskind (χ_1 \karr χ_2) \\
+  Γ[\ahatk[χ_1][2],\; \ahatk[χ_1 \karr χ_2][1],\; \ahatk[χ_2] = \ahat_1\, \ahat_2] ⊢ A_1 \instr \ahatk[χ_1 \karr χ_2][1] ⊣ Θ \\
+  Θ ⊢ [Θ]A_2 \instl \ahatk[χ_1][2] ⊣ Δ
+}
+{ Γ[\ahatk[χ_2]] ⊢ A_1\, A_2 \instr \ahatk[χ_2] ⊣ Δ }
+
+\and
+\inferrule*[right=InstRTuple]
+{ Γ[\ahatk[⋆][n], \dots, \ahatk[⋆][1], \ahatk[⋆] = ⟨\ahat_1,\dots,\ahat_n⟩] ⊢ A_1 \instr \ahatk[⋆][1] ⊣ Δ_1 \ \dots \
+  Δ_{n-1} ⊢ [Δ_{n-1}]A_n \instr \ahatk[⋆][n] ⊣ Δ_n
+}
+{ Γ[\ahatk[⋆]] ⊢ ⟨A_1,\dots, A_n⟩ \instr \ahatk[⋆] ⊣ Δ_n }
+
+\and
+\inferrule*[right=InstRFix]
+{ Γ[\ahatk[⋆\karr⋆][1],\; \ahatk[⋆] = \Rec\, \ahat_1] ⊢ A \instr \ahatk[⋆\karr⋆][1] ⊣ Δ }
+{ Γ[\ahatk[⋆]] ⊢ \Rec\, A \instr \ahatk[⋆] ⊣ Δ }
+
+\and
+\inferrule*[right=InstR$\latkap$]
+{ Γ[\ahatk[⋆][2],\; \ahatk[\clockk][1],\; \ahat = \latkap[\ahat_1]\, \ahat_2] ⊢ κ \instr \ahatk[\clockk][1] ⊣ Θ \\
+  Θ ⊢ [Θ]A \instr \ahatk[⋆][2] ⊣ Δ
+}
+{ Γ[\ahatk[⋆]] ⊢ \latkap\, A \instr \ahatk[⋆] ⊣ Δ }
+\end{mathpar}

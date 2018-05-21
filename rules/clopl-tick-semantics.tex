@@ -1,0 +1,44 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{\ticksem{Ξ}{v}{v'}}}\
+  \begin{array}[t]{l}
+  \text{Under evaluation context $Ξ$, $v$ evaluates to $v'$}\\
+  \text{in the next tick}
+  \end{array}
+\\
+\mathlarger{\boxed{\force{Ξ}{v}{v'}}}\
+  \text{Under evaluation context $Ξ$, force $v$ to $v'$} \\
+\end{array}
+$$
+\begin{mathpar}
+
+\inferrule*[right=$\tickop$Constr]
+{ \force{Ξ}{v_1}{v_1'} \ \dots \ \force{Ξ}{v_n}{v_n'} \\
+  \ticksem{Ξ}{v_1'}{v_1''} \ \dots \ \ticksem{Ξ}{v_n'}{v_n''}
+}
+{ \ticksem{Ξ}{ (\Constr\, v_1,\dots,v_n) }{ (\Constr\, v_1'',\dots,v_n'') } }
+
+\inferrule*[right=$\tickop$Tuple]
+{ \force{Ξ}{v_1}{v_1'} \ \dots \ \force{Ξ}{v_n}{v_n'} \\
+  \ticksem{Ξ}{v_1'}{v_1''} \ \dots \ \ticksem{Ξ}{v_n'}{v_n''}
+}
+{ \ticksem{Ξ}{ ⟨v_1,\dots,v_n⟩ }{ ⟨v_1'',\dots,v_n''⟩ } }
+
+\inferrule*[right=$\tickop$Fold]
+{ \ticksem{Ξ'}{v}{v'} }
+{ \ticksem{Ξ}{\fold\, v}{\fold\, v'} }
+
+\inferrule*[right=$\tickop$Value]
+{  }
+{ \ticksem{Ξ}{v}{v} }
+
+\inferrule*[right=$\forceop$TickAbs]
+{ \stepsem{Ξ', α ↦ \tickc}{e}{v} }
+{ \force{Ξ}{\tclos{Ξ'}{α}{e}}{v} }
+
+\inferrule*[right=$\forceop$Value]
+{ v ≠ \tclos{Ξ'}{α}{e} }
+{ \force{Ξ}{v}{v} }
+
+\end{mathpar}
+

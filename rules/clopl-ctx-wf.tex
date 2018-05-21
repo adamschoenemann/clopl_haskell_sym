@@ -1,0 +1,31 @@
+\newcommand{\ctx}[1]{#1\ ctx}
+$$
+\begin{array}{l}
+\mathlarger{\boxed{\ctx{Γ}}\ \text{Algorithmic context $Γ$ is well-formed} } \\
+\end{array}
+$$
+\begin{mathpar}
+\inferrule*[right=EmptyCtx]
+{ }
+{ \ctx{⋅} }
+
+\inferrule*[right=UVarCtx]
+{ \ctx{Γ} \\ α ∉ \dom{Γ} }
+{ \ctx{Γ,α : χ} }
+
+\inferrule*[right=VarCtx]
+{ \ctx{Γ} \\ x ∉ \dom{Γ} \\ Γ ⊢ A \haskind ⋆ }
+{ \ctx{Γ,x : A} }
+
+\inferrule*[right=EVarCtx]
+{ \ctx{Γ} \\ \ahat ∉ \dom{Γ} }
+{ \ctx{Γ,\ahat : χ} }
+
+\inferrule*[right=SolvedEVarCtx]
+{ \ctx{Γ} \\ \ahat ∉ \dom{Γ} \\ Γ ⊢ τ \haskind χ }
+{ \ctx{Γ,\ahat : χ = τ} }
+
+\inferrule*[right=MarkerCtx]
+{ \ctx{Γ} \\ \marker_{\ahat} ∉ Γ \\ \ahat ∉ \dom{Γ} }
+{ \ctx{Γ,\marker_{\ahat}} }
+\end{mathpar}

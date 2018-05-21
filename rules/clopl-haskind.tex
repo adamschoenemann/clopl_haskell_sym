@@ -1,0 +1,49 @@
+$$
+\begin{array}{l}
+\mathlarger{\boxed{Ψ ⊢ A \haskind χ}}\ \text{Under context $Ψ$, type $A$ has kind $χ$}
+\end{array}
+$$
+
+\begin{mathpar}
+
+\inferrule*[lab=KindVar]
+{ (α : χ) ∈ Ψ }
+{ Ψ ⊢ α \haskind χ }
+
+\and
+\inferrule*[lab=KindFree]
+{ (\Type : χ) ∈ Ψ }
+{ Ψ ⊢ \Type \haskind χ }
+
+\and
+\inferrule*[lab=Kind$∀$]
+{ Ψ, α : χ ⊢ A \haskind ⋆ }
+{ Ψ ⊢ ∀α : χ.\, A \haskind ⋆ }
+
+\and
+\inferrule*[lab=Kind$→$]
+{ Ψ ⊢ A \haskind ⋆ \\ Ψ ⊢ B \haskind ⋆ }
+{ Ψ ⊢ A → B \haskind ⋆ }
+
+\and
+\inferrule*[lab=KindTuple]
+{ Ψ ⊢ A_1 \haskind ⋆ \\ \dots \\ Ψ ⊢ A_n \haskind ⋆ }
+{ Ψ ⊢ ⟨A_1, \dots, A_n ⟩ \haskind ⋆ }
+
+
+\and
+\inferrule*[lab=KindApp]
+{ Ψ ⊢ F \haskind (χ_1 → χ_2) \\ Ψ ⊢ B \haskind χ_1 }
+{ Ψ ⊢ F\, B \haskind χ_2 }
+
+\and
+\inferrule*[lab=KindFix]
+{ Ψ ⊢ F \haskind (⋆ → ⋆) }
+{ Ψ ⊢ \sym{Fix}\, F \haskind ⋆ }
+
+\and
+\inferrule*[lab=Kind$\latkap$]
+{ Ψ ⊢ κ \haskind \clockk \\ Ψ ⊢ A \haskind ⋆ }
+{ Ψ ⊢ \latkap{A} \haskind ⋆ }
+
+\end{mathpar}

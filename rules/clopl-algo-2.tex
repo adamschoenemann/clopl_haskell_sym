@@ -1,0 +1,48 @@
+$$
+\def\arraystretch{1.2}
+\begin{array}{l}
+\mathlarger{\boxed{Γ ⊢ \checkbranch{ρ}{A}{e}{B} ⊣ Δ}}\
+  \begin{array}[t]{l}
+  \text{Under context $Γ$, check branch $(\branch{})$ with pattern-type $A$} \\
+  \text{ and body-type $B$, with output context $Δ$ }
+  \end{array} \\
+\mathlarger{\boxed{Γ ⊢ ρ \patcheck A ⊣ Δ}}\
+  \text{Under context $Γ$, check pattern $ρ$ with type $A$ yielding new context $Δ$}
+\end{array}
+$$
+
+\begin{mathpar}
+\and
+\inferrule*[right=Branch]
+{ Γ,\marker_{β} ⊢ ρ \patcheck A ⊣ Θ \\ Θ ⊢ e \checks B ⊣ Δ,\marker_{β},Δ' }
+{ Γ ⊢ \checkbranch{ρ}{A}{e}{B} ⊣ Δ }
+
+\and
+\inferrule*[right=PatBind]
+{ }
+{ Γ ⊢ x \patcheck A ⊣ Γ, x :_= A }
+
+\and
+\inferrule*[right=PatTuple]
+{ Γ ⊢ ρ_1 \patcheck A_1 ⊣ Δ_1 \ \dots \ Δ_{n-1} ⊢ ρ_n \patcheck ⊣ Δ_n }
+{ Γ ⊢ ⟨ρ_1, \dots, ρ_n⟩ \patcheck ⟨A_1, \dots, A_n⟩ ⊣ Δ_n }
+
+\and
+\inferrule*[right=\Decl PatConstr]
+{ (\Pat : ∀\ahats.\ \hat{B}_1 → \dots → \hat{B}_n → \hat{τ}) ∈ ϕ \\
+  Γ,\ahats ⊢ \hat{τ} \subt A ⊣ Δ \\
+  Δ ⊢ ρ_1 \patcheck [Δ]\hat{B}_1 ⊣ Δ_1 \quad \dots \quad Δ_{n-1} ⊢ ρ_n \patcheck [Δ_{n-1}]\hat{B}_n ⊣ Δ_n
+}
+{ Γ ⊢ \Pat\ ρ_1, \dots, ρ_n \patcheck A ⊣ Δ_n }
+
+\and
+\inferrule*[right=\Decl Let]
+{ Γ ⊢ e' \synths A ⊣ Θ \\ Θ,x :_= [Θ]A ⊢ e \checks [Θ]B ⊣ Δ }
+{ Γ ⊢ \letterm{x}{e'}{e} \checks B ⊣ Δ }
+
+\and
+\inferrule*[right=\Decl LetPat]
+% { Γ ⊢ e' \synths A ⊣ Θ \\ Θ ⊢  \checkbranch{ρ}{[Θ]A}{e}{[Θ]B} ⊣ Δ }
+{ Γ ⊢ \case\ e'\ \sym{of}\ (ρ ⟶ e) \checks B ⊢ Γ \\ ρ ≠ x }
+{ Γ ⊢ \letterm{ρ}{e'}{e} \checks B ⊣ Δ }
+\end{mathpar}

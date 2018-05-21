@@ -1,0 +1,25 @@
+$$
+\def\arraystretch{1.5}
+\begin{array}{lrcl}
+% add sidenote to disallow clock kinds directly to the right of arrows
+\text{Kinds} & \kind & ::= & ⋆ \alt \clockk \alt \kind → \kind' \\
+             & \kind' & ::= & ⋆ \alt \kind → \kind' \\
+\text{Types} & A,B,C,F,G & ::= & \Type \alt A → B \alt ⟨A_1, \dots, A_n⟩ \alt α \alt ∀α\!:\!\kind.\, A
+                        \alt F\, B \alt \Rec\, F \alt \latkap\, A \\
+\text{Monotypes} & τ, σ & ::= & \Type \alt τ → σ \alt ⟨τ_1, \dots, τ_n⟩ \alt τ\, σ \alt α
+                           \alt \Rec\, τ \alt \latkap\, τ \\
+\text{Terms} & e & ::= & \hspace{-0.5em}
+                    \begin{array}[t]{l}
+                     x \alt \Constr \alt λx. e \alt e_1\, e_2 \alt ⟨e_1, \dots, e_n⟩ \alt (e : A)
+                    \alt \tickabs(x : κ).\, e \alt e\, [x] \alt e\, \{A\} \alt \sym{fix}
+                    \alt \sym{fold} \alt \sym{unfold} \alt \fmap_{F} \alt \primRec_{F} \\\hspace{-0.5em}
+                    \alt \case\ e\ \sym{of}\ (\branch{1}, \dots, \branch{n}) \alt \letterm{ρ}{e_1}{e_2} % \\\hspace{-0.5em}
+                    \end{array} \\
+\text{Patterns} & ρ & ::= & x \alt \Constr\, ρ_1,\dots,ρ_n \alt ⟨ρ_1, \dots, ρ_n⟩ \\
+\text{Contexts} & Ψ & ::= & \hspace{-0.5em}
+                        \begin{array}[t]{l}
+                        ⋅ \alt Ψ,x :_λ A \alt Ψ,x :_= A \alt Ψ,\Constr : A \alt Ψ,α : χ \alt Ψ,\Type : χ
+                        \alt Functor(F)
+                        \end{array}
+\end{array}
+$$
