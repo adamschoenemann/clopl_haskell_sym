@@ -68,6 +68,7 @@
 \usepackage{relsize}
 \usepackage{chngcntr}
 \usepackage{float}
+\usepackage{hyperref}
 \usepackage[title]{appendix}
 
 \setmathsf{Linux Biolinum}
@@ -81,6 +82,17 @@
 \input{./prelude}
 
 \begin{document}
+\begin{comment}
+A major problem is how to present tick-application and normal application properly.
+In the source code, they share the same abstract syntax, but we distinguish by wrapping
+tick-variables and tick-constants in brackets.
+So e1 e2 is `App e1 e2` and e1 [e2] is `App e1 (TickVar e2)`.
+But the presentation only has syntax e1 e2 and e1 [e2], so (TickVar e2) so not exist as
+syntax. Because of that, we cannot use the presentation of the algorithmic inference rules
+in its current form, as it refers to non-existant syntax, since [x] and [♢] cannot stand
+alone. So either, change the presentation-syntax to conform with the implementation, or
+you will have to come up with new rule exactly like application-synthesis, but for ticks.
+\end{comment}
 \sloppy
 
 %% Title information
@@ -175,7 +187,7 @@ theory or the implementation of existing languages.
 \section{Introduction}
 Lazy evaluation, as popularized by Haskell, allows us to express and
 compose infinite programs that still yield useful output. Under lazy evaluation, an infinite program is
-\emph{productive} if it produces output in finite time. \code{zeros = 0 : zeros} is productive, while \code{xs = xs} is
+\emph{productive} if it produces output for any finite ``point in time''. \code{zeros = 0 : zeros} is productive, while \code{xs = xs} is
 not. Non-productive programs are unresponsive, and correspond to a proof of \textit{False} in the Curry-Howard
 interpretation, and therefore we wish to exclude such programs statically. Infinite programs can
 also be \emph{causal}. A causal definition produces output at time $n$ by examining input only
@@ -184,7 +196,9 @@ For example, \code{noncausal (x : y : xs) = y : noncausal xs}
 will always depend on a future value before producing any output, and thus
 cannot produce output in the current time-step. If the input to \code{noncausal} is being
 constructed ``at the same time'' as \code{noncausal} produces output, then the program will
-hang. As a concrete example from Atkey \& McBride \cite{atkey2013productive}, consider the two following
+hang. As a concrete example \footnote{Which McBride learned of from Nils Anders Danielsson
+in \url{https://mazzo.li/epilogue/index.html\%3Fp=186.html}}
+from Atkey \& McBride \cite{atkey2013productive}, consider the two following
 definitions of \code{map} on infinite streams in Haskell:
 
 \begin{minted}{haskell}
@@ -196,8 +210,7 @@ maap f (Cons x1 (Cons x2 xs)) =
 \end{minted}
 
 If applied to fully constructed streams, their behaviour is identical. But if applied to
-streams that are still ``being constructed'', \code{maap} diverges while \code{map} executes
-as expected. For example:
+streams that are still ``being constructed'', \code{maap} can diverge while \code{map} executes as expected for any stream. For example:
 
 \begin{minted}{haskell}
 data Stream a = Cons a (Stream a)
@@ -207,12 +220,12 @@ badnats = Cons 0 (maap (+ 1) badnats)
 
 \code{nats} produces the infinite stream of natural numbers, but \code{badnats} diverges,
 since \code{maap} requires two values to be available on the input stream but there ever
-only is one. This distinction cannot be captured by Haskell's type system.
+only is one. Since \code{nats} and \code{badnats} has the same type, their distinct
+semantics is not captured adequately by their types.
 
 \subsection{Guarded Recursion}\label{sec:guarded-recursion}
 Guarded recursion was originally suggested by Nakano \cite{nakano2000modality}
-to address the challenge of working with coinductive data in proof assistants such as
-Coq \cite{coq} and Agda \cite{norell2007towards}.
+to address the challenge of working with coinductive data in proof assistants.
 Guarded recursion introduces a new modality $\rhd$, pronounced ``later'',
 which makes it possible to distinguish between values we can use now, and
 values we can only use later.
@@ -242,7 +255,8 @@ take 0 _ = []
 take (n + 1) (Cons x xs) = x : take n xs
 \end{minted}
 
-The problem arises because $\code{xs} : \later (\code{Stream a})$ in the second clause,
+The problem arises because $\code{xs}$ has type $\later (\code{Stream a})$ in
+the second clause,
 whereas \code{take} expects its second argument to have type $\code{Stream a}$.
 The global time-slicing of guarded recursion prevents us from ever looking into the ``future'',
 even on fully-constructed data. This is by design, but once data has been constructed, we should
@@ -287,7 +301,7 @@ We can now type \code{take} for fully-constructed streams:
 take :: Natural -> (|$∀κ$|. Stream |$κ$| a) -> List a
 take 0 _ = []
 take (n + 1) xs = x : take n xs' where
-  (x, xs) = uncons xs
+  (x, xs') = uncons xs
 \end{minted}
 
 Using clock variables, we can only type \code{map} and \code{maap} above as
@@ -296,7 +310,8 @@ map :: |$∀κ$|. (a -> b) -> Stream |$κ$| a -> Stream |$κ$| b
 maap :: (a -> b) -> (|$∀κ$|. Stream |$κ$| a) -> (|$∀κ$|. Stream |$κ$| b)
 \end{minted}
 
-Their types clearly reflect their productivity, leading us to statically rule out programs
+Their types clearly reflect their behaviour, namely that \code{maap} is only defined for
+fully-constructed streams, which allows us to statically rule out programs
 such as \code{badnats}.
 
 Bahr et al. \cite{bahrclocks} extended the work of AtKey \& McBride to a dependent type-theory
@@ -311,16 +326,16 @@ context, leading to the rule\footnote{The rule is not the actual rule for tick c
 (which is more complicated), as it is not closed under substitution or weakening, but it is admissible.}:
 
 \begin{mathpar}
-\inferrule{Γ ⊢_{∆,κ} t : \latbind{α}{κ}\, A \and Γ ⊢_∆}
+\inferrule{Γ ⊢_{∆,κ} e : \latbind{α}{κ}\, A \and Γ ⊢_∆}
           {Γ ⊢_{∆,κ} e[\tickc] : A[\diamond/α]}
 \end{mathpar}
 
-Here, the typing judgment $Γ$ is subscripted with a clock-context $Δ$ containing all introduced
+Here, the typing judgment $Γ_Δ ⊢ e : A$ is subscripted with a clock-context $Δ$ containing all introduced
 clock variables. As such, the rule states that applying the tick constant to a suspended computation
 on clock $κ$ is only well-typed if the context is well-typed \textit{without} $κ$; that is, a
 context where $κ$ is not free. Such a context is called $κ$-stable. The effect is that the
-tick constant cannot be used under any tick abstractions, and as such a fixpoint can only
-be unfolded once with a tick constant.
+tick constant cannot be used to force a suspended computation over $κ$ under any tick abstractions
+over $κ$, and as such a fixpoint can only be unfolded once with a tick constant.
 
 There is to our knowledge no implementation of a language with clock variables. Although
 the theory is sound, it can be hard to predict how they integrate in a practical setting:
@@ -329,10 +344,10 @@ implementation strategies? We seek to explore this space by implementing an
 embedded language in Haskell designed for practical programming. Its theory is based on the
 simply-typed fragment of \clott.
 
-\subsection{Our contribution}
+\subsection{Our contributions}
 \begin{itemize}
   \item We present \clopl, a language for co-productive programming
-        based on Bahr et al\cite{bahrclocks}. The semantics is given by a coinductively defined
+        based on Bahr et al. \cite{bahrclocks}. The semantics is given by a coinductively defined
         big-step operational semantics. The type system
         ensures that all CloPL programs are productive and thus have a well-defined
         semantics.
@@ -386,6 +401,7 @@ premise requires $e$ to have type $\latkap{A} → A$. The formation rules for re
 are predicated on the well-formedness of $\Fix X.\, A$; namely that $X$ can only occur strictly
 positively \textit{unless} it is guarded by a $\latkap$ \cite{nakano2000modality}.
 
+% TODO: Fix Unfold and Fold which use simply Γ ⊢ (not subscript) in their premises
 \begin{figure*}
 \input{rules/sclott}
 \caption{Selected typing rules from simply-typed \clott.}
@@ -418,7 +434,7 @@ $$
 We can then use universal quantification over clocks to model coinductive types from
 guarded recursive types as per Atkey \& McBride \cite{atkey2013productive} to define
 the type of coinductive streams $\Str := ∀κ.\, \Strk$ and then lift $\gconst$ to produce
-coinductive streams as $\const := λ(n : \Nat).\, Λκ.\, \gconst$. We can then lift
+coinductive streams as $\const := λ(n : \Nat).\, Λκ.\, \gconst\, n$. We can then lift
 $\ghd$ and $\gtl$ in the same way. Here, we work in a context with a \textit{clock constant}
 $κ_0$ which is used to instantiate a clock quantified value, thus safely removing the
 guardedness. We then use primitive recursion to define the $\nth$ function
@@ -434,7 +450,7 @@ $$
   & & \quad λ(n : \Nat).\ λ(xs : \Str).\ \\
   & & \quad\quad \case\ \unfold\ n\ \sym{of} \\
   & & \quad\quad\quad \inl\, \unit ⟶ \hd\, xs \\
-  & & \quad\quad\quad \inr\, ⟨n', rec⟩ ⟶ rec\; n'\; (\tl\; xs) \\
+  & & \quad\quad\quad \inr\, ⟨n', rec⟩ ⟶ rec\; (\tl\; xs) \\
   & &)
 \end{array}
 $$
@@ -486,7 +502,7 @@ of kind $χ → χ$. We have the
 standard function space and n-ary tuples of types. $α$ signifies the use of a quantified
 type variable, and are thus not related to ticks anymore, to avoid ambiguity.
 Universal quantification of types mentions the kind of the quantified type
-in $∀α : χ.\ A$. We shall often omit the kind-signature when we simply mean $α : ⋆$.
+in $∀α : χ.\ A$, however we omit the kind and write $∀α.\ A$ when we mean $∀α : ⋆.\ A$.
 Types can be applied to other types, written $F\, B$. We choose to represent
 recursive types as a built-in type constructor \textsf{Fix}. Finally, we have the type of
 delayed computations on clock $κ$ written $\latkap A$. Crucially, clock variables are just
@@ -496,7 +512,7 @@ normal type variables of kind $\clockk$, and so do not have any special syntatic
 \paragraph*{Terms} are variables, constructor names $\Constr$ (e.g. $\sym{Nil}$ or $\sym{Cons}$), lambda
 abstractions, term applications, n-ary tuples, annotated terms, tick abstractions
 $\tickabs(x : κ).\, e$, tick application $e\, [x]$, and explicit type applications $e\, \{A\}$. We model
-clock application is just a specialized form of type application (with kind $\clockc$), in the
+clock application is just a specialized form of type application (with kind $\clockk$), in the
 same way that we model clock abstraction using regular type abstraction. One thing that we have
 omitted is the term-level syntax for clock abstraction ($Λκ. e$). Our type system will be able
 to infer tick abstractions from the type of terms. We use new syntax for tick abstractions to
@@ -523,7 +539,7 @@ Finally, there are case expressions with lists of branches and let-expressions.
 \paragraph*{Patterns} are simply name-bindings $x$, constructor-patterns $\Constr$ applied
 to zero or more patterns, or n-ary tuple patterns $⟨ρ_1,\dots,ρ_n⟩$.
 
-\paragraph*{Declarative contexts} are unordered bags that carry contextual information used
+\paragraph*{Declarative contexts} are lists that carry contextual information used
 for typing. Names can be associated to types in two ways: through a lambda abstraction as $x :_λ A$,
 or through a let-binding or pattern-match as $x :_= A$. This is important when we judge a
 context as $κ$-stable, since let-bound variables are ignored, as they are effectively
@@ -634,7 +650,7 @@ type $F$ must be given explicitly.
 In the same vein, we model \textsf{fold, unfold, fix} and $\fmap_F$ as first-class polymorphic
 primitives, but note that our system does not include
 a mechanism to abstract over functors. We cannot write, as you would be able to in Haskell,
-\code{Functor f => a -> f b -> f b}. This is not an inherent limitation of the inference
+\code{Functor f => (a -> b) -> f a -> f b}. This is not an inherent limitation of the inference
 system, nor the underlying calculus. It is simply out of scope for this project.
 
 Pattern-matching, let-bindings and case-expressions are left out of this exposition, as they are not
@@ -802,7 +818,7 @@ solved to $τ$ (after first checking that the kinds are equal).
 
 \textsc{InstLAllR} demonstrates how we deal with assigning existentials to polymorphic
 types; our inference system relies on predicativity, so we cannot simply instantiate
-$\ahatk$ to a polymorphic type. Instead, we add the universal variable $\bhatk$ to
+$\ahatk$ to a polymorphic type. Instead, we add the universal variable $β:χ$ to
 the context and attempt to assign $\ahatk$ to $B$. After the assignment, $\beta$ and
 everything to the right of it goes out of scope, so it is dropped from the output
 context.
@@ -1044,7 +1060,7 @@ the implementation is described in our master thesis \cite{schoenemann2018clofrp
 
 \section{Compiling to Haskell}
 While we have implemented the operational semantics as an evaluator in Haskell, its
-runtime characteristics leave much to desired. Although plenty of opportunities for optimizations
+runtime characteristics leave much to be desired. Although plenty of opportunities for optimizations
 exist, it is a much easier path to performance to simply compile \clopl programs to Haskell,
 and thus exploit the many optimizations that Haskell has accrued over the years. We have to preserve
 the semantics we have given above in the compiled code. To do so, we compile data-declarations

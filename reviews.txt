@@ -1,0 +1,412 @@
+----------------------- REVIEW 1 ---------------------
+PAPER: 3
+TITLE: Productive Co-Programming in Haskell with Ticking Clocks
+AUTHORS: Adam Schønemann
+
+Overall evaluation: -2 (reject)
+
+----------- Overall evaluation -----------
+Summary:
+
+Programs that produce coinductive results are often required to be
+productive, in the sense that the next component of their output
+can always be produced in finite time.  One means of ensuring
+productivity is to use the notion of guarded recursion, which
+places syntactic restrictions on the form of progams that can be
+written.  However, having to write programs in a guarded style
+is rather prescriptive, so a number of more flexible methods for
+ensuring productivity have been explored in the literature.
+
+This paper focuses on the method known as 'clock variables', which
+were introduced by Atkey and McBride, but do not yet appear to
+have been implemented.  This paper presents an implementation in
+Haskell of the simply-typed fragment of a clocked typed theory
+based on the use of clock variables and clock quantification.
+
+Comments:
+
+The paper achieves its aims, and it is very impressive that this
+work and the resulting paper has been produced by an MSc student.
+Unfortunately, however, the paper in its present form is not
+suitable for publication in the Haskell Symposium.
+
+My primary concern is that this is not the right venue for the
+paper.  In particular, the majority of the contents (section
+3 on type inference and section 4 on operational semantics) have
+little to do with Haskell per se.  The material that is more
+closely connected (section 5 on compilation and section 6 on
+examples) only comprises just over one page in total.
+
+My secondary, related, concern is that the paper is too heavily
+focused on technical details.  For example, the main body of the
+paper contains 11 figures, many of which are of highly technical,
+and the appendix contains even more detailed figures.  Despite
+having worked on related topics for many years, I quickly became
+swamped by the details, and suspect that a general Haskell reader
+would not find this paper or its contributions accessible.
+
+In summary, the work is an impressive achievement for a masters
+student, but the current version of the paper is not suitable
+for the Haskell Symposium.  If the author wishes to rework the
+material for another venue, such as a specialist event on type
+theory or coinductive types, it would be beneficial to pair up
+with one of his MSc supervisors (Rasmus Mogelberg and Patrick
+Bahr) to help restructure and revise the paper.
+
+Additional comments for the author:
+
+p1, The abstract is too long, and should be compressed.  I
+highly recommend the CGI (context, gap, innovation) approach
+put forward by Derek Dryer at the POPL mentoring workshop:
+http://people.mpi-sws.org/~dreyer/talks/talk-plmw16.pdf
+
+p1, The type of fix requires some further explanation for
+readers who may not be familiar with the 'later' modality.
+
+p2, "xs : later (Stream a)" -> "xs :: later (Stream a)"
+
+p2, On line 171, the text jumps straight into theory.  An
+example to help the reader would be very beneficial here.
+
+p2, "Our contribution" -> "Our contributions".
+
+p2, "et al[2]" -> "et al [2]" (add space before reference).
+
+p3, Some explanation for footnote 2 is required.
+
+p3, Some more explanation for the comment that "it is not feasible
+to write practicial programs with it alone" is required.
+
+p10, "to desired" -> "to be desired".
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 3
+TITLE: Productive Co-Programming in Haskell with Ticking Clocks
+AUTHORS: Adam Schønemann
+
+Overall evaluation: -2 (reject)
+
+----------- Overall evaluation -----------
+The author presents a language with support for guarded recursive
+types and clock variables. The language seems to be a less complicated
+variant of a language presented in previous work. The presented
+language is claimed to be "simply-typed", but it includes type
+quantification. I guess the author meant "not dependently typed".
+
+The paper actually includes two languages, (a variant of) CloTT and
+CloPL. I did not see the point of including CloTT in the paper,
+because the main focus was on CloPL, and there were no results
+relating the two languages.
+
+Two typing relations were presented for CloPL, one declarative and one
+(that was claimed to be) algorithmic. There were no results relating
+these two relations, and (as far as I could tell) not even any
+conjectures in that direction. Is the algorithmic relation sound with
+respect to the declarative one? Complete?
+
+An operational semantics was also presented for CloPL. The author
+states that "The type system ensures that all CloPL programs are
+productive and thus have a well-defined semantics", but I did not find
+any argument in this direction in the paper. (And I doubt that the
+statement is true, because the author states that he does not check
+that pattern matches cover all cases.)
+
+Finally a simple translation to Haskell is presented (again without
+any proofs). The author states that this gives an efficient
+implementation. I assume that he means that the resulting programs are
+efficient. I took one of his benchmarks and implemented it myself in
+Haskell. My no-frills implementation was about three times faster on
+my setup. I would thus not call his generated code efficient, but at
+least it does not seem to cause, say, exponential slow-downs (for that
+example).
+
+I think that this line of research is worthwhile, and I think it is
+nice to see an actual implementation of a language with guarded
+recursive types and clock variables. However, given the shortcomings I
+have listed above I do not think that the paper should be published in
+its current state.
+
+Detailed comments
+-----------------
+
+There are lots of pointers to the appendices, in my opinion too many.
+While it is fine to refer to an extended version of the paper for,
+say, detailed proofs, the reviewed object is the 12-page paper without
+the appendices. Unless I'm mistaken that is also what is published if
+the paper is accepted.
+
+The language used in the paper could be improved. I won't give any
+details here, except to mention that the word "simply" is overused (I
+found 25 occurrences in the first 12 pages, not counting
+"simply-typed").
+
+"an infinite program is productive if it produces output in finite
+time": Would you call "xs = 1 : undefined" productive? It does produce
+(some) output in finite time.
+
+"As a concrete example from Atkey & McBride [1]": I don't think this
+example is originally due to Atkey & McBride. I don't know who first
+came up with it, but McBride writes elsewhere that he "learned about
+[the example] from Nils Anders Danielsson"
+(https://mazzo.li/epilogue/index.html%3Fp=186.html).
+
+"But if applied to streams that are still “being constructed”, maap
+diverges while map executes as expected": Not necessarily, the
+following code works fine: notsobadnats =
+Cons 0 (Cons 1 (maap (+ 2) notsobadnats)).
+
+"This distinction cannot be captured by Haskell’s type system": That's
+a strong statement nowadays. Can you prove it?
+
+"Guarded recursion was originally suggested by Nakano [10] to address
+the challenge of working with coinductive data in proof assistants
+such as Coq [6] and Agda [11]": I don't think Agda had any support for
+coinduction back then.
+
+"We cannot make finite observations on guarded recursive data": I
+assume that you could have defined "take" if List had been defined
+using the later modality.
+
+Line 164: One occurrence of xs should be xs'.
+
+"we can only type map and maap above as [...]": Doesn't the type you
+give for maap work for map?
+
+"Their types clearly reflect their productivity": Both definitions are
+productive. I assume that you have something more nuanced than
+productivity in mind.
+
+Line 179, "is for example not productive": Is "productive" the right
+term here?
+
+Line 186: Should e be t?
+
+"the typing judgment Γ": ⊢?
+
+"The effect is that the tick constant cannot be used under any tick
+abstractions": Really? What about tick abstractions for clock
+variables other than κ?
+
+"a fixpoint can only be unfolded once with a tick constant": What is
+the unfolding rule for fix?
+
+Figure 2, Unfold: Please define Γ ⊢ A.
+
+The ClockAbs rule mentions both Λ and ∀, neither of which is present
+in the syntax in Figure 1.
+
+Your terms include ◇, but not e [◇]. Another mistake?
+
+Line 241: Should the production "A ∷= A" be "A ∷= X"?
+
+"Rules for e.g. sums and products are left out": Please state more
+exactly what you have left out.
+
+How is Γ ⊢_Δ defined? Does it state that every clock variable κ that
+is free in Γ must be in Δ?
+
+Why do you write F[(Fix X.F[X]) × A] rather than F[(Fix X.F) × A / X]?
+
+Line 305: const^κ should be applied to n.
+
+"we work in a context with a clock constant κ_0": Does this mean that
+you can't define hd in the empty context? Can you still compile and
+run, say, hd (const 0)? In Listing 1 you also use κ_0, but I did not
+see any mention of this constant in the theoretical development.
+Please provide more information.
+
+Do you assume that variables in contexts (and clock contexts) are
+unique? Otherwise several rules (at least Var and TickApp) look
+strange to me.
+
+Line 321: Drop the second occurrence of n'.
+
+Line 397, "to avoid ambiguity": Do you mean "to increase ambiguity"? I
+suggest that you use a different symbol.
+
+"We shall often omit the kind-signature when we simply mean α : ⋆": Do
+you mean that "∀ α. A" is shorthand for "∀ α : ⋆. A"?
+
+"We model clock application is just a specialized form of type
+application (with kind κ_0)": Should "κ_0" be "c"?
+
+Why does CloPL contain fmap, but not CloTT?
+
+Why do you include both tuples and constructors in CloPL?
+
+You write that "Declarative contexts are unordered bags", but you give
+a list-like syntax for them. Do you really want to use bags? In the
+term λ x. λ x. x, can the final x refer to either binding?
+
+"two new judgments": These judgements are not included in Figure 4, so
+perhaps you don't need to mention them in the main part of the paper.
+
+Your declarative inference rules are bidirectional, but I don't really
+see the point of the bidirectionality. One reason for using
+bidirectionality is that this sometimes allows you to read the rules
+as an algorithm, but that is not the case here. For instance, rule →I⇒
+does not tell you how to pick σ and τ. Do you have another reason for
+using bidirectional rules?
+
+Figure 4, TApp: Did you forget "Ψ ⊢" in front of the second
+antecedent?
+
+Figure 4, ▹^κApp: The notation "[x]" does not match any production for
+A.
+
+"As Haskell has demonstrated, explicit type application is in fact
+quite useful": Haskell (GHC) has only recently gained direct support
+for explicit type applications, and some readers may not be aware of
+this.
+
+"The inference system is predicative": What does this mean? Are you
+referring to the use of monotypes in ∀App?
+
+"impredicative types are not first-class citizens in CloPL": What does
+this mean? What do you mean by "impredicative type"? If α in
+∀(α : χ). A can be instantiated with ∀(α : χ). A, then the type is
+impredicative.
+
+"Functor f => a -> f b -> f b": A strange example.
+
+"the inference rules →L": →L?
+
+Line 821: β̂ should perhaps be β.
+
+Figure 6, Anno: The first antecedent looks ill-formed.
+
+Figure 6: You claim that these rules are algorithmic, but both Sub and
+α̂App overlap with other rules.
+
+"As in Haskell, we “hide” higher-rank types behind a type": Is this
+only for ease of use? (Your theoretical development does not require
+higher-rank types to be written in this form, right?) What would
+happen if you did not do this?
+
+Line 967: Should Stream be Str and CoStream CoStr?
+
+Line 968: Perhaps you can comment on the fact that k is in scope here,
+even though it is only bound in the type signature.
+
+Lines 986: Here you applied g to af. You could also have applied g to
+the tick af bound on the next line. Would this make any difference? (I
+assume that the answer is no.)
+
+Why is Listing 1 not part of Section 6?
+
+"Values are [...] tick variables": I don't see any tick variables in
+the grammar in Figure 7. However, I do see "fold v", which you did not
+include in your enumeration.
+
+TickApp: Is it necessary to evaluate the tick argument (e₂)?
+
+⋙Fold: Replace Ξ′ with Ξ in the antecedent.
+
+⋙Value: Is this rule supposed to overlap with the other rules?
+
+"the Ξ ⊢ v⋙v′ relation does not necessarily terminate": What does it
+mean for a relation to terminate?
+
+Is the relation in Figure 9 supposed to be read coinductively? In that
+case I suggest that you use double instead of single lines in the
+inference rules, to make it clear that this is not a typical,
+inductive definition. (Double lines have been used by others in this
+way, see for instance "Coinductive big-step operational semantics" by
+Leroy and Grall, doi:10.1016/j.ic.2007.12.004.)
+
+Should the definition of values in Figure 7 also be read
+coinductively? If not, then I don't understand how to make sense of
+the operational semantics.
+
+Figure 10: I suppose that "e ∷ t" should be ⟦e⟧ ∷ ⟦t⟧. One occurrence
+of p should be ρ. How are patterns translated? Your use of the @
+symbol and the TypeApplications extension to GHC may not be familiar
+to all readers. Does your translation also include generation of
+Functor instances?
+
+Why do you use "1 →"? I expect that you would get better performance
+if you made direct use of GHC's laziness (which includes memoisation).
+
+How are hdk and tlk defined?
+
+When discussing repmin I suggest that you cite Bird ("Using Circular
+Programs to Eliminate Multiple Traversals of Data",
+doi:10.1007/BF00264249).
+
+I'd like to know how efficient your implementation of repmin is,
+compared to an idiomatic Haskell implementation. (I ran a quick
+experiment myself, using your code. A more or less direct translation
+of Bird's code was about three times faster than your implementation,
+using your benchmark example, and using my machine, my choice of
+compiler version and flags, etc.)
+
+Line 1423: Fix "[n. d.]".
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 3
+TITLE: Productive Co-Programming in Haskell with Ticking Clocks
+AUTHORS: Adam Schønemann
+
+Overall evaluation: 1 (weak accept)
+
+----------- Overall evaluation -----------
+This paper takes existing work on guarded recursion and clock variables
+and work on type-inference for higher-ranked types and integrates them.
+The end result is a polymorphic language with type-inference and support for
+coinductive programming.
+
+The authors show how to extend Dunfield and Krishnaswami (DK) declarative
+and algorithmic systems for type inference with higher-ranked types with several
+additional constructs. Those include the constructs for guarded recursion, clock
+variables, as well as type applications and a kind system.
+They also present a big-step operational semantics for their language, as well
+as a translation into Haskell.
+Using those results they build an implementation that is used to run some small
+coinductive programs.
+
+Points for:
+
+- Nice introduction to guarded recursion and clock variables
+
+- Shows a declarative and an algorithmic system for a source language
+integrating higher-ranked types, higher-kinds, guarded recursion and
+clock variables.
+
+- Has an implementation that elaborates to Haskell
+
+Points against:
+
+- No meta-theory, and considers some extensions not well-studied
+previously. Therefore the system may ultimately be flawed.
+
+Overall I quite enjoyed this paper. It is mostly an implementation paper that
+takes well-studied, existing work, and integrates them to build something
+useful. From a quick look at the rules I didn’t spot any (major) flaws.
+
+The most obvious concern is that there is no meta-theory at all, so we don’t
+actually know whether the overall results are correct in several dimensions:
+- are the algorithmic and declarative systems sound/complete/decidable?
+- can the language really ensure productivity of corecursive definitions?
+etc.
+
+Nevertheless I think this work is still valuable, and non-trivial. However
+the lack of correctness results makes me reluctant to champion the paper.
+In some sense I think this would make a very nice workshop paper, but
+I’m not entirely sure that it has the expected level of reliability expected
+for the Haskell Symposium. I’m nonetheless on the positive side.
+
+Some detailed comments:
+
+Figure 1: Should your syntax for “fix” be:
+
+fix^{k} e
+
+instead of “fix”? You use “fix^{k} e” in the typing rules.
+
+- Dunfield and Krishnaswami (DK) system does not support higher-kinds, and it
+is not clear whether this extension is harmless or not. Perhaps it is.
+
+However you should definitely point out that higher-kinds are not supported in DK’s
+algorithm, so this is your own extension.

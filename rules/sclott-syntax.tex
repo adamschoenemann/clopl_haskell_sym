@@ -1,9 +1,9 @@
 $$
 \begin{array}{lrll}
-\text{Types} & A,B,F & ::= & A \alt A → B \alt \Fix X.\, F \alt \latkap\, A \\
+\text{Types} & A,B,F & ::= & X \alt A → B \alt \Fix X.\, F \alt \latkap\, A \\
 \text{Terms} & e & ::= & x \alt λ(x : A). e \alt λ(α : κ).\, e \alt \\
- &  &                  & e_1\, e_2 \alt e\, [α] \alt e\, [κ] \alt \sym{fix} \alt \tickc \alt \\
- &  &                  & \sym{fold} \alt \sym{unfold} \alt \primRec_{F} \\
+ &  &                  & e_1\, e_2 \alt e\, [α] \alt e\, [\tickc] \alt e\, [κ] \alt \sym{fix} \alt \\
+ &  &                  & \tickc \alt \sym{fold} \alt \sym{unfold} \alt \primRec_{F} \\
 \text{Contexts} & Γ & ::= & ⋅ \alt  Γ, x : A \alt Γ, α : κ \\
 \text{Clock Contexts} & Δ & ::= & ⋅ \alt  Δ, κ
 \end{array}

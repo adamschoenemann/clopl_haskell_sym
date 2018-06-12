@@ -58,6 +58,6 @@
 
   \and
   \inferrule*[lab=PrimRec]
-  {\hastype{Γ}{e}{F[(\Fix X.\, F[X]) × A] → A }}
+  {\hastype{Γ}{e}{F[((\Fix X.\, F[X]) × A) / X] → A }}
   {\hastype{Γ}{\primRec_F\, e}{(\Fix X.\, F[X]) → A}}
 \end{mathpar}

@@ -71,18 +71,18 @@ $$
 {Ψ ⊢ γ(x : κ).\, e \synths \latkap A }
 
 \and
-\inferrule*[lab=\Decl $\latkap$App]
-{ Ψ ⊢ κ \haskind \clockk \\ Ψ ⊢ x \checks κ }
-{ Ψ ⊢ (\latkap\, A) \bull [x] \appsynths A }
+\inferrule*[lab=\Decl $\latkap$App,right=$e ≠ \tickc$]
+{ Ψ ⊢ κ \haskind \clockk \\ Ψ ⊢ e \checks κ }
+{ Ψ ⊢ (\latkap\, A) \bull e \appsynths A }
 
 \and
 \inferrule*[lab=\Decl $\latkap$App$\tickc$]
 { Ψ ⊢ κ \haskind \clockk \\ \stable_κ(Ψ) }
-{ Ψ ⊢ (\latkap\, A) \bull [\tickc] \appsynths A }
+{ Ψ ⊢ (\latkap\, A) \bull \tickc \appsynths A }
 
 \and
 \inferrule*[lab=\Decl TApp,leftskip=1em]
-{ Ψ ⊢ e \synths ∀(α : χ).\ B \\ A \haskind χ }
+{ Ψ ⊢ e \synths ∀(α : χ).\ B \\ Ψ ⊢ A \haskind χ }
 { Ψ ⊢ e\, \{A\} \synths [A/α]B }
 
 % \and
